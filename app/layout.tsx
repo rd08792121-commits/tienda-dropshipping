@@ -21,10 +21,11 @@ import { StoreConfigProvider } from "@/components/store-config-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Toaster } from "@/components/ui/sonner";
 import { AUTH_ENABLED } from "@/lib/auth-config";
-import { commerce, getCanonicalUrl, getStoreFaviconUrl, meGetCached } from "@/lib/commerce";
+import { commerce, getCanonicalUrl, getStoreBrand, getStoreFaviconUrl, meGetCached } from "@/lib/commerce";
 import { getCartCookieJson } from "@/lib/cookies";
 import { StoreJsonLd } from "@/lib/json-ld";
 import { getStoreConfig } from "@/lib/store-config";
+import { YNSMedia } from "@/lib/yns-media";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -148,7 +149,7 @@ async function CartProviderWrapper({ children }: { children: React.ReactNode }) 
 	// Only cached reads here. Awaiting anything request-time (cookies, headers, the
 	// cart) would take the header, nav and footer out of the prerendered shell and
 	// leave the page blank until the server responds.
-	const [links, storeConfig] = await Promise.all([getNavLinks(), getStoreConfig()]);
+	const [links, storeConfig, brand] = await Promise.all([getNavLinks(), getStoreConfig(), getStoreBrand()]);
 
 	return (
 		<StoreConfigProvider value={storeConfig}>
@@ -158,8 +159,18 @@ async function CartProviderWrapper({ children }: { children: React.ReactNode }) 
 						<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 							<div className="relative flex items-center justify-between h-16">
 								<div className="flex items-center gap-2">
-									<Link href="/" className="text-xl font-bold">
-										Your Next Store
+									<Link href="/" className="flex items-center gap-2 text-xl font-bold">
+										{brand.logoUrl ? (
+											<YNSMedia
+												src={brand.logoUrl}
+												alt={brand.storeName}
+												width={32}
+												height={32}
+												className="h-8 w-8 rounded-sm object-contain"
+												priority
+											/>
+										) : null}
+										<span>{brand.storeName}</span>
 									</Link>
 									<Navbar links={links} />
 								</div>

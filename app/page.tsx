@@ -1,9 +1,12 @@
 import { Suspense } from "react";
 import { ProductGridSkeleton } from "@/components/product-grid-skeleton";
 import { About } from "@/components/sections/about";
+import { Benefits } from "@/components/sections/benefits";
+import { Categories } from "@/components/sections/categories";
 import { Hero } from "@/components/sections/hero";
 import { Newsletter } from "@/components/sections/newsletter";
 import { ProductGrid } from "@/components/sections/product-grid";
+import { Testimonials } from "@/components/sections/testimonials";
 
 function FeaturedProductsSkeleton() {
 	return (
@@ -23,9 +26,14 @@ export default function Home() {
 	return (
 		<>
 			<Hero />
+			<Benefits />
+			<Suspense fallback={null}>
+				<Categories />
+			</Suspense>
 			<Suspense fallback={<FeaturedProductsSkeleton />}>
 				<ProductGrid title="Featured Products" limit={6} />
 			</Suspense>
+			<Testimonials />
 			<About />
 			<Newsletter />
 		</>

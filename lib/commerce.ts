@@ -44,6 +44,21 @@ export async function getStoreSeo() {
 	};
 }
 
+// Store name + logo for chrome (header/footer brand). Same cache posture as
+// getStoreSeo — cached reads only, so it stays part of the prerendered shell.
+export async function getStoreBrand() {
+	"use cache";
+	cacheLife("hours");
+
+	const [error, me] = await try_(meGetCached());
+	if (error) {
+		return { storeName: "Your Next Store", logoUrl: null };
+	}
+	const logo = me.store.settings?.logo;
+	const logoUrl = (typeof logo === "string" ? logo : logo?.imageUrl) ?? null;
+	return { storeName: me.store.name || "Your Next Store", logoUrl };
+}
+
 export function getStoreFaviconUrl(
 	settings: Awaited<ReturnType<typeof commerce.meGet>>["store"]["settings"],
 ) {
