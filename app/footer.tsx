@@ -1,6 +1,6 @@
 import { cacheLife } from "next/cache";
 import Link from "next/link";
-import { commerce, meGetCached } from "@/lib/commerce";
+import { commerce, getStoreBrand, getStoreSeo, meGetCached } from "@/lib/commerce";
 
 async function FooterBlogLink() {
 	"use cache";
@@ -106,7 +106,11 @@ async function getCopyrightYear() {
 }
 
 export async function Footer() {
-	const year = await getCopyrightYear();
+	const [year, brand, { storeDescription }] = await Promise.all([
+		getCopyrightYear(),
+		getStoreBrand(),
+		getStoreSeo(),
+	]);
 
 	return (
 		<footer className="border-t border-border bg-background">
@@ -115,10 +119,10 @@ export async function Footer() {
 					{/* Brand */}
 					<div className="sm:max-w-xs">
 						<Link href="/" className="text-xl font-bold text-foreground">
-							Your Next Store
+							{brand.storeName}
 						</Link>
 						<p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-							Curated essentials for modern living. Quality products, thoughtfully designed.
+							{storeDescription || "Quality products, thoughtfully curated and delivered to your door."}
 						</p>
 					</div>
 
@@ -156,7 +160,9 @@ export async function Footer() {
 
 				{/* Bottom bar */}
 				<div className="py-6 border-t border-border">
-					<p className="text-sm text-muted-foreground">&copy; {year} Your Next Store. All rights reserved.</p>
+					<p className="text-sm text-muted-foreground">
+						&copy; {year} {brand.storeName}. All rights reserved.
+					</p>
 				</div>
 			</div>
 		</footer>
